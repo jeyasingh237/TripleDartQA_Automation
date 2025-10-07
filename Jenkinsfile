@@ -1,53 +1,18 @@
 pipeline {
-    agent any
-//
-//     tools {
-//         maven 'MAVEN_HOME'   // Configure Maven in Jenkins Global Tool Configuration
-//         jdk 'JAVA_HOME'      // Configure JDK in Jenkins Global Tool Configuration
-//     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                // Pull your repo from Git
-                git branch: 'testNG',
-                url:'https://github.com/TripleDartPlatform/TripleDartQA_Automation.git'
-            }
-        }
-
-        stage('Build & Run Cucumber Tests') {
-            steps {
-                // This runs your JUnit Cucumber Runner
-                sh 'mvn clean test'
-            }
-        }
-
-        stage('Publish Cucumber HTML Report') {
-            steps {
-                // Publish cucumber-report.html from target folder
-                publishHTML([
-                    reportDir: 'target',
-                    reportFiles: 'cucumber-report.html',
-                    reportName: 'Cucumber HTML Report',
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: false
-                ])
-            }
-        }
-
-        stage('Publish Cucumber JSON Report') {
-            steps {
-                cucumber buildStatus: 'UNSTABLE',
-                        fileIncludePattern: 'target/cucumber.json',
-                        trendsLimit: 10
-            }
-        }
+  agent any
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'testNG',
+            url: 'git@github.com:TripleDartPlatform/TripleDartQA_Automation.git',
+            credentialsId: 'github-ssh'   // remove if public repo
+      }
     }
-
-    post {
-        always {
-            junit 'target/surefire-reports/*.xml'   // Parse JUnit XML results
-        }
+    stage('Verify') {
+      steps {
+        sh 'pwd'
+        sh 'ls -la'
+      }
     }
+  }
 }
